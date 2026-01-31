@@ -135,6 +135,7 @@ class BaseImageLoader:
 class FileDialogImageLoader(BaseImageLoader):
     def __init__(self, window: Gtk.ApplicationWindow, temp_dir: str) -> None:
         super().__init__(window, temp_dir)
+        self.settings = Settings()
 
     def open_file_dialog(self) -> None:
         file_dialog = Gtk.FileDialog()
@@ -150,7 +151,7 @@ class FileDialogImageLoader(BaseImageLoader):
         file_dialog.set_filters(filters)
 
         # Set initial folder to screenshot folder from settings if available
-        screenshot_folder = Settings().screenshot_folder
+        screenshot_folder = self.settings.screenshot_folder
         if screenshot_folder and os.path.exists(screenshot_folder):
             initial_folder = Gio.File.new_for_path(screenshot_folder)
             file_dialog.set_initial_folder(initial_folder)
