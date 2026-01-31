@@ -26,6 +26,7 @@ from gradia.clipboard import save_texture_to_file
 from gradia.ui.image_creation.source_image_generator import SourceImageGeneratorWindow
 from gradia.utils.timestamp_filename import TimestampedFilenameGenerator
 from gradia.backend.logger import Logger
+from gradia.backend.settings import Settings
 from gradia.graphics.loaded_image import LoadedImage, ImageOrigin
 from typing import Optional, Callable
 ImportFormat = tuple[str, str]
@@ -134,6 +135,7 @@ class BaseImageLoader:
 class FileDialogImageLoader(BaseImageLoader):
     def __init__(self, window: Gtk.ApplicationWindow, temp_dir: str) -> None:
         super().__init__(window, temp_dir)
+        self.settings = Settings()
 
     def open_file_dialog(self) -> None:
         file_dialog = Gtk.FileDialog()
@@ -147,6 +149,12 @@ class FileDialogImageLoader(BaseImageLoader):
         filters = Gio.ListStore.new(Gtk.FileFilter)
         filters.append(image_filter)
         file_dialog.set_filters(filters)
+
+        # Set initial folder to screenshot folder from settings if available
+        screenshot_folder = self.settings.screenshot_folder
+        if screenshot_folder and os.path.exists(screenshot_folder):
+            initial_folder = Gio.File.new_for_path(screenshot_folder)
+            file_dialog.set_initial_folder(initial_folder)
 
         file_dialog.open(self.window, None, self._on_file_selected)
 

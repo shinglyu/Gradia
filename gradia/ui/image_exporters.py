@@ -159,6 +159,11 @@ class FileDialogExporter(BaseImageExporter):
         default_ext = SUPPORTED_EXPORT_FORMATS[target_format]['extensions'][0]
         dialog.set_current_name(base_name + default_ext)
 
+        # Set initial folder to screenshot folder from settings if available
+        screenshot_folder = self.settings.screenshot_folder
+        if screenshot_folder and os.path.exists(screenshot_folder):
+            dialog.set_current_folder(screenshot_folder)
+
         dialog.connect("response", lambda d, r: self._on_dialog_response(d, r, target_format))
         dialog.show()
 
